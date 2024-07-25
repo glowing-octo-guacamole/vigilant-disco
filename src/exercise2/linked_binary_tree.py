@@ -20,7 +20,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from binary_tree import BinaryTree
-
+from linked_queue import LinkedQueue
 
 class LinkedBinaryTree(BinaryTree):
     """Linked representation of a binary tree structure."""
@@ -205,13 +205,77 @@ class LinkedBinaryTree(BinaryTree):
 
     def compute_and_print_heights(self):
         def postorder_height(p):
+            """Returns the height of the node p."""
+            # Initialize height for the current node
             height = 0
 
+            # Loop through all children of the current node
             for c in self.children(p):
+
+                # Take the maximum height of its children and add one to account for the edge connecting the current node to this child
                 height = max(height, postorder_height(c) + 1)
+
+            # Print the element of the current node and its computed height
             print(f"Element: {p.element()}, Height: {height}")
 
+            # Return the computed height
             return height
 
+        # Compute heights starting from the root of the tree
         if not self.is_empty():
             postorder_height(self.root())
+
+
+def list_to_tree(values):
+    tree = LinkedBinaryTree()
+    if not values:
+        return tree
+
+    iter_values = iter(values)
+    root_value = next(iter_values)
+    if root_value is not None:
+        root = tree._add_root(root_value)
+        queue = LinkedQueue()
+        queue.enqueue(root)
+
+        while not queue.is_empty():
+            node = queue.dequeue()
+
+            try:
+                left_value = next(iter_values)
+                if left_value is not None:
+                    left_node = tree._add_left(node, left_value)
+                    queue.enqueue(left_node)
+            except StopIteration:
+                break
+
+            try:
+                right_value = next(iter_values)
+                if right_value is not None:
+                    right_node = tree._add_right(node, right_value)
+                    queue.enqueue(right_node)
+            except StopIteration:
+                break
+
+    return tree
+
+
+def draw_tree(tree, position=None, prefix="", is_tail=True):
+    if position is None:
+        position = tree.root()
+    if position is not None:
+        print(prefix + ("└── " if is_tail else "├── ") + str(position.element()))
+        children = list(tree.children(position))
+        for i, child in enumerate(children):
+            draw_tree(
+                tree,
+                child,
+                prefix + ("    " if is_tail else "│   "),
+                i == len(children) - 1,
+            )
+
+
+# Create a binary tree from a list of values
+tree = list_to_tree([1, 2, 3, 4, 5, 6, 7])
+draw_tree(tree)
+tree.compute_and_print_heights()

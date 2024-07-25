@@ -37,12 +37,24 @@ class SortedPriorityQueue(PriorityQueueBase):  # base class defines _Item
 
     def add(self, key, value):
         """Add a key-value pair."""
+
+        # Create a new instance of the _Item class using the provided key and value.
         newest = self._Item(key, value)
+
+        # Loop through the index (i) and the item (item) at each position in the list
         for i, item in enumerate(self._data):
+            # Compare the newly created item newest with the current item in the list
+            # Since the list is sorted, we look for the first item in the list that is larger than the new item
             if newest < item:
+
+                # Insert the new item at the position (i). This maintains the sorted order of the list.
                 self._data.insert(i, newest)
+
+                # After inserting the new item, we break out of the loop because we've found the correct position and completed the insertion
                 break
         else:
+
+            # Append if the correct position is at the end
             self._data.append(newest)
 
     def min(self):
@@ -50,8 +62,11 @@ class SortedPriorityQueue(PriorityQueueBase):  # base class defines _Item
 
         Raise Empty exception if empty.
         """
+        # Raise an exception if the priority queue is empty
         if self.is_empty():
             raise Empty("Priority queue is empty.")
+
+        # Return the smallest item is at the front of the list
         item = self._data[0]
         return (item._key, item._value)
 
@@ -60,7 +75,25 @@ class SortedPriorityQueue(PriorityQueueBase):  # base class defines _Item
 
         Raise Empty exception if empty.
         """
+        # Raise an exception if empty if the priority queue is empty
         if self.is_empty():
             raise Empty("Priority queue is empty.")
+
+        # Remove the smallest item from the front of the list
         item = self._data.pop(0)
+
+        # Return the key-value pair of the removed item
         return (item._key, item._value)
+
+
+# Example usage
+if __name__ == "__main__":
+    pq = SortedPriorityQueue()
+    pq.add(5, "A")
+    pq.add(9, "C")
+    pq.add(3, "B")
+    pq.add(7, "D")
+
+    print("Min:", pq.min())  # Should print (3, 'B')
+    print("Remove Min:", pq.remove_min())  # Should remove and print (3, 'B')
+    print("Min:", pq.min())  # Should print (5, 'A')
